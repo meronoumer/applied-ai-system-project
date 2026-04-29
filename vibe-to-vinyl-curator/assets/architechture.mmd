@@ -1,0 +1,32 @@
+flowchart LR
+    U[User enters emotional playlist prompt] --> FE[Frontend: Neon Vibe-to-Vinyl UI]
+
+    FE --> API[FastAPI Backend]
+
+    API --> Parser[Prompt Parser]
+    Parser --> Planner[Planner Agent]
+
+    Planner --> Retriever[Song Retriever]
+    DB[(Local songs.csv Music Database)] --> Retriever
+
+    Retriever --> Selector[Selector Agent]
+    Selector --> Sequencer[Sequencer]
+
+    Sequencer --> Critic[Critic / Validator Agent]
+
+    Critic -->|Low confidence or constraint issue| Revision[Revision Pass]
+    Revision --> Retriever
+
+    Critic -->|Passed validation| Output[Final Playlist Arc]
+
+    Output --> FE
+
+    Output --> Songs[Selected Songs by Stage]
+    Output --> Scores[Confidence Scores]
+    Output --> Trace[Agent Trace]
+    Output --> Report[Validation Report]
+
+    Tests[Pytest Reliability Tests] --> Parser
+    Tests --> Retriever
+    Tests --> Critic
+    Tests --> API
