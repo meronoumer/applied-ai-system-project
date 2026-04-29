@@ -38,7 +38,7 @@ def curate_playlist(request: CurateRequest) -> CurateResponse:
     retrieval_counts: dict[str, int] = {}
 
     for stage in stages:
-        candidates = retrieve_candidates(songs, stage, intent, request.allow_explicit)
+        candidates = retrieve_candidates(songs, stage, intent)
         retrieval_counts[stage.name] = len(candidates)
         trace.append(
             AgentTraceStep(
