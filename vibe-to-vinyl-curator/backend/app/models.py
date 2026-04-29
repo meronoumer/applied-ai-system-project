@@ -144,28 +144,69 @@ class CurateResponse(BaseModel):
 
 
 class EvaluationRequest(BaseModel):
-    """Request body for validating a user-supplied playlist against a prompt."""
+    """Request body for running benchmark prompts through the curator."""
 
-    prompt: str = Field(min_length=3, max_length=1000)
-    song_ids: list[int] = Field(min_length=1, max_length=50)
+    prompts: list[str] | None = Field(default=None, min_length=1, max_length=25)
+    target_duration_minutes: int | None = Field(default=None, ge=5, le=240)
     allow_explicit: bool = False
+    max_songs: int = Field(default=10, ge=3, le=24)
+
+    # Compatibility fields for the earlier song-id evaluator helper.
+    prompt: str | None = Field(default=None, min_length=3, max_length=1000)
+    song_ids: list[int] | None = Field(default=None, min_length=1, max_length=50)
+
+    @field_validator("prompts")
+    @classmethod
+    def validate_prompts(cls, value: list[str] | None) -> list[str] | None:
+        """Reject empty prompt strings."""
+        if value is None:
+            return value
+        cleaned = [prompt.strip() for prompt in value]
+        if any(len(prompt) < 3 for prompt in cleaned):
+            raise ValueError("each prompt must contain at least 3 characters")
+        return cleaned
 
     @field_validator("song_ids")
     @classmethod
-    def unique_song_ids(cls, value: list[int]) -> list[int]:
+    def unique_song_ids(cls, value: list[int] | None) -> list[int] | None:
         """Reject duplicated song ids before evaluation."""
+        if value is None:
+            return value
         if len(value) != len(set(value)):
             raise ValueError("song_ids must be unique")
         return value
 
+    @model_validator(mode="after")
+    def require_evaluation_input(self) -> "EvaluationRequest":
+        """Require either batch prompts or the legacy prompt/song_ids pair."""
+        if self.prompts:
+            return self
+        if self.prompt and self.song_ids:
+            return self
+        raise ValueError("provide prompts, or provide prompt with song_ids")
+
+
+class PromptEvaluationResult(BaseModel):
+    """Evaluation summary for one test prompt."""
+
+    prompt: str
+    overall_confidence: float = Field(ge=0, le=1)
+    passed: bool
+    warnings: list[str] = Field(default_factory=list)
+
 
 class EvaluationResult(BaseModel):
-    """Result returned by the playlist evaluation endpoint."""
+    """Batch evaluation result returned by the evaluation endpoint."""
 
-    parsed_intent: ParsedIntent
-    validation_report: ValidationReport
-    confidence_score: float = Field(ge=0, le=1)
-    agent_trace: list[AgentTraceStep]
+    results: list[PromptEvaluationResult] = Field(default_factory=list)
+    average_confidence: float = Field(default=0.0, ge=0, le=1)
+    pass_rate: float = Field(default=0.0, ge=0, le=1)
+
+    # Compatibility fields for the earlier song-id evaluator helper.
+    parsed_intent: ParsedIntent | None = None
+    validation_report: ValidationReport | None = None
+    confidence_score: float = Field(default=0.0, ge=0, le=1)
+    agent_trace: list[AgentTraceStep] = Field(default_factory=list)
 
 
 # Backward-compatible aliases for the initial deterministic modules.
