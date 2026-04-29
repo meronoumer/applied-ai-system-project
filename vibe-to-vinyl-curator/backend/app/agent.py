@@ -15,7 +15,7 @@ from .planner import plan_arc
 from .retriever import retrieve_candidates
 from .selector import select_songs
 from .sequencer import flatten_playlist, sequence_stage
-from .validator import confidence_from_report, validate_playlist
+from .validator import confidence_from_report, needs_revision, validate_playlist
 
 logger = logging.getLogger(__name__)
 
@@ -57,14 +57,15 @@ def curate_playlist(request: CurateRequest) -> CurateResponse:
             )
         )
 
-    report = validate_playlist(intent, stages, grouped, request.allow_explicit)
+    all_recommendations = flatten_playlist(grouped)
+    report = validate_playlist(all_recommendations, intent, stages)
     trace.append(AgentTraceStep(step="critic", summary="Validated playlist against safety, diversity, fit, and structure checks.", details=report.model_dump()))
 
-    if any(issue.severity == "warning" for issue in report.issues):
+    if needs_revision(report):
         trace.append(
             AgentTraceStep(
                 step="revision",
-                summary="No deterministic revision was required; warnings are surfaced for user review.",
+                summary="Revision is recommended by the critic; warnings are surfaced for user review.",
                 details={"retrieval_counts": retrieval_counts},
             )
         )
@@ -72,7 +73,7 @@ def curate_playlist(request: CurateRequest) -> CurateResponse:
         trace.append(AgentTraceStep(step="revision", summary="Playlist passed checks without revision.", details={"retrieval_counts": retrieval_counts}))
 
     confidence = confidence_from_report(report)
-    logger.info("curation_complete confidence=%s songs=%s", confidence, len(flatten_playlist(grouped)))
+    logger.info("curation_complete confidence=%s songs=%s", confidence, len(all_recommendations))
     return CurateResponse(
         parsed_intent=intent,
         playlist_arc=stages,
@@ -99,8 +100,14 @@ def evaluate_playlist(request: EvaluateRequest) -> EvaluateResponse:
     missing = [song_id for song_id in request.song_ids if song_id not in songs_by_id]
     if missing:
         trace.append(AgentTraceStep(step="critic", summary="Rejected playlist because unknown song ids were supplied.", details={"missing_ids": missing}))
-        report = validate_playlist(intent, stages, {}, request.allow_explicit)
+        report = validate_playlist([], intent, stages)
         report.issues.append(ValidationIssue(severity="error", message=f"Unknown song ids: {missing}"))
+        report.warnings.append(f"Unknown song ids: {missing}")
+        report.constraint_satisfaction = 0.0
+        report.overall_confidence = 0.0
+        report.metrics["constraint_satisfaction"] = 0.0
+        report.metrics["overall_confidence"] = 0.0
+        report.passed = False
         return EvaluateResponse(parsed_intent=intent, validation_report=report, confidence_score=0.0, agent_trace=trace)
 
     grouped = {stage.name: [] for stage in stages}
@@ -116,7 +123,7 @@ def evaluate_playlist(request: EvaluateRequest) -> EvaluateResponse:
             )
         )
 
-    report = validate_playlist(intent, stages, grouped, request.allow_explicit)
+    report = validate_playlist(flatten_playlist(grouped), intent, stages)
     confidence = confidence_from_report(report)
     trace.append(AgentTraceStep(step="critic", summary="Validated supplied playlist ids.", details=report.model_dump()))
     return EvaluateResponse(parsed_intent=intent, validation_report=report, confidence_score=confidence, agent_trace=trace)
