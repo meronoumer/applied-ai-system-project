@@ -1,0 +1,14 @@
+{
+    "python.testing.pytestArgs": [
+        "vibe-to-vinyl-curator"
+    ],
+    "python.testing.unittestEnabled": true,
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./vibe-to-vinyl-curator",
+        "-p",
+        "*test.py"
+    ]
+}

@@ -19,7 +19,7 @@ Open `http://127.0.0.1:8000/docs` for interactive API docs.
 - `GET /health` returns service status.
 - `GET /songs` returns the local song database.
 - `POST /curate` parses a natural language prompt and returns a staged playlist with an agent trace.
-- `POST /evaluate` evaluates supplied song ids against a prompt-derived arc.
+- `POST /evaluate` runs a batch of test prompts and reports confidence and pass rate.
 
 ## Example Request
 
@@ -40,3 +40,13 @@ The backend is intentionally modular:
 - `sequencer.py` orders songs inside stages.
 - `validator.py` provides guardrails and confidence scoring.
 - `agent.py` orchestrates the workflow and emits trace steps.
+
+## Testing
+
+Run the backend test suite from this directory:
+
+```bash
+pytest
+```
+
+The tests cover parser intent extraction, no-lyrics handling, retriever guardrails, validator constraint scoring, the full agent workflow, and batch evaluation pass-rate calculation.

@@ -1,0 +1,3 @@
+2026-04-29 03:27:20,764 INFO backend.app.agent curation_complete confidence=0.85 songs=9
+2026-04-29 03:27:20,786 INFO backend.app.agent curation_complete confidence=0.853 songs=6
+2026-04-29 03:27:20,800 INFO backend.app.agent curation_complete confidence=0.902 songs=6
