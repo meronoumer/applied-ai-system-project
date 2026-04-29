@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vibe-to-Vinyl Curator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workspace">
+        <div class="panel prompt-panel">
+          <p class="eyebrow">Agentic playlist arc builder</p>
+          <h1>Vibe-to-Vinyl Curator</h1>
+          <form id="curate-form">
+            <label for="prompt">Emotional intention</label>
+            <textarea id="prompt" name="prompt" rows="6">I want a clean reflective playlist that starts calm and becomes hopeful for a late night reset.</textarea>
+            <div class="controls">
+              <label>
+                Songs
+                <input id="max-songs" type="number" min="3" max="24" value="9" />
+              </label>
+              <label class="check">
+                <input id="allow-explicit" type="checkbox" />
+                Allow explicit
+              </label>
+              <button type="submit">Curate</button>
+            </div>
+          </form>
+          <p id="status" class="status">Connects to the FastAPI backend at http://127.0.0.1:8000.</p>
+        </div>
+        <section id="results" class="results" aria-live="polite"></section>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

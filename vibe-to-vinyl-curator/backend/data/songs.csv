@@ -1,0 +1,46 @@
+id,title,artist,genre,duration_seconds,bpm,energy,mood_tags,lyrics_level,explicit,best_use,description
+1,Holocene,Bon Iver,indie folk,337,148,0.32,reflective|calm|nostalgic,medium,false,wind_down,Layered folk textures for quiet introspection
+2,Motion Picture Soundtrack,Radiohead,art rock,260,79,0.21,melancholic|dreamy|reflective,medium,false,late night,A fragile closer with cinematic sadness
+3,Sweet Disposition,The Temper Trap,indie rock,231,129,0.76,hopeful|energized|bright,medium,false,commute,Anthemic guitars that lift the room
+4,Midnight City,M83,synth pop,244,105,0.82,dreamy|energized|nostalgic,low,false,drive,Neon synth momentum with widescreen emotion
+5,Intro,The xx,indie electronic,127,100,0.43,focused|cool|minimal,none,false,study,Minimal instrumental pulse for concentration
+6,First Breath After Coma,Explosions in the Sky,post rock,548,86,0.61,hopeful|cinematic|reflective,none,false,deep work,A slow instrumental build with catharsis
+7,Can I Call You Rose,Thee Sacred Souls,soul,190,82,0.46,romantic|warm|calm,medium,false,dinner,Soft soul with tender vintage warmth
+8,Golden Hour,Kacey Musgraves,country pop,198,94,0.48,romantic|hopeful|calm,medium,false,sunset,Glowing country pop for gentle optimism
+9,Electric Feel,MGMT,indie pop,229,103,0.72,playful|energized|confident,medium,false,party,A funky psychedelic spark
+10,Redbone,Childish Gambino,r&b,326,80,0.58,romantic|cool|confident,medium,true,late night,Slow groove with smoky tension
+11,Love on the Brain,Rihanna,pop soul,224,57,0.55,romantic|dramatic|melancholic,high,false,solo listening,Powerful vocal drama and longing
+12,Space Song,Beach House,dream pop,320,147,0.36,dreamy|nostalgic|melancholic,medium,false,wind_down,Hazy dream pop for bittersweet reflection
+13,Sunday Morning,Maroon 5,pop rock,242,88,0.54,calm|romantic|bright,medium,false,brunch,Breezy groove with easy warmth
+14,Weightless,Marconi Union,ambient,485,60,0.12,calm|focused|dreamy,none,false,sleep,Ambient textures designed for deep calm
+15,Avril 14th,Aphex Twin,ambient,125,82,0.18,reflective|calm|minimal,none,false,study,A delicate piano miniature
+16,Dog Days Are Over,Florence + The Machine,indie pop,252,150,0.88,energized|hopeful|release,high,false,workout,Explosive percussion and joyful release
+17,Breathe Me,Sia,alternative pop,272,72,0.34,melancholic|vulnerable|reflective,high,false,healing,A raw piano led emotional confession
+18,Fix You,Coldplay,alternative rock,296,138,0.62,healing|hopeful|melancholic,high,false,healing,A familiar arc from grief to lift
+19,Here Comes the Sun,The Beatles,classic rock,185,129,0.64,hopeful|bright|calm,medium,false,morning,A warm classic for renewal
+20,Lovely Day,Bill Withers,soul,255,98,0.67,hopeful|warm|confident,medium,false,morning,Soulful optimism with an easy groove
+21,No Ordinary Love,Sade,smooth soul,440,83,0.42,romantic|cool|dreamy,medium,false,dinner,Silky atmosphere for intimate listening
+22,Teardrop,Massive Attack,trip hop,331,78,0.44,moody|reflective|focused,medium,false,study,A shadowy trip hop pulse
+23,Clair de Lune,Claude Debussy,classical,300,70,0.16,calm|dreamy|reflective,none,false,wind_down,Impressionist piano with moonlit softness
+24,Innerbloom,Rufus Du Sol,electronic,581,122,0.69,dreamy|hopeful|energized,low,false,drive,A patient electronic rise toward euphoria
+25,Good Days,SZA,r&b,279,121,0.52,reflective|hopeful|dreamy,high,true,solo listening,Airy reflections with a hopeful core
+26,Lost in Yesterday,Tame Impala,psychedelic pop,249,101,0.71,nostalgic|energized|confident,medium,false,commute,Groovy psych pop about moving forward
+27,Pink + White,Frank Ocean,r&b,184,160,0.45,nostalgic|romantic|reflective,medium,true,sunset,A soft and wistful modern soul moment
+28,Harvest Moon,Neil Young,folk rock,303,113,0.38,romantic|nostalgic|calm,medium,false,dinner,A gentle classic with slow dance warmth
+29,A Walk,Tycho,downtempo,318,120,0.57,focused|dreamy|calm,none,false,study,Instrumental electronic flow for steady work
+30,Sunset Lover,Petit Biscuit,electronic,237,91,0.5,dreamy|calm|hopeful,none,false,commute,Glowing instrumental chill with lift
+31,Dreams,Fleetwood Mac,classic rock,258,120,0.6,nostalgic|cool|reflective,medium,false,drive,Iconic soft rock with steady motion
+32,The Less I Know The Better,Tame Impala,psychedelic pop,216,117,0.73,confident|playful|energized,medium,false,party,A bass driven burst of colorful momentum
+33,Shake It Out,Florence + The Machine,indie pop,279,108,0.84,release|hopeful|energized,high,false,healing,A cathartic anthem for letting go
+34,River,Joni Mitchell,folk,244,76,0.24,melancholic|nostalgic|reflective,high,false,healing,A spare seasonal song of regret
+35,Bloom,The Paper Kites,indie folk,210,96,0.31,romantic|calm|warm,medium,false,dinner,Soft acoustic intimacy
+36,Experience,Ludovico Einaudi,classical crossover,315,88,0.56,cinematic|hopeful|reflective,none,false,deep work,A piano and strings build with resolve
+37,Go Your Own Way,Fleetwood Mac,classic rock,219,135,0.86,confident|energized|release,high,false,drive,Classic rock propulsion and defiance
+38,Nights,Frank Ocean,r&b,307,90,0.64,reflective|nostalgic|moody,high,true,late night,A shifting structure with late night memory
+39,Everything in Its Right Place,Radiohead,electronic rock,251,123,0.47,focused|moody|minimal,low,false,study,Hypnotic keys and controlled unease
+40,Such Great Heights,The Postal Service,indietronica,267,175,0.78,hopeful|romantic|energized,medium,false,commute,Bright electronic pop with upward motion
+41,Re: Stacks,Bon Iver,indie folk,401,82,0.22,reflective|melancholic|calm,medium,false,late night,Sparse guitar for emotional quiet
+42,Opal,Four Tet,electronic,514,124,0.66,dreamy|focused|energized,none,false,deep work,Textured electronic patterns that gently accelerate
+43,At Last,Etta James,soul,181,88,0.5,romantic|warm|classic,medium,false,dinner,A timeless romantic arrival
+44,New Slang,The Shins,indie folk,231,99,0.4,nostalgic|reflective|bittersweet,medium,false,solo listening,Melodic indie folk with wistful charm
+45,Walking on a Dream,Empire of the Sun,electropop,198,126,0.79,dreamy|energized|hopeful,medium,false,commute,A bright synth pop lift
