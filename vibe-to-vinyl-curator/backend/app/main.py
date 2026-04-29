@@ -23,27 +23,24 @@ from .models import (
 configure_logging()
 logger = logging.getLogger(__name__)
 
-LOCALHOST_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://localhost:8000",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:8000",
-    "null",
-]
-
 app = FastAPI(
     title="Vibe-to-Vinyl Curator API",
     description="Deterministic agentic AI music recommendation backend.",
     version="0.1.0",
 )
 
+# Development CORS:
+# This project is intended to run locally during the final project demo.
+# The frontend may be served from VS Code Live Preview, Live Server, Vite,
+# Next.js, or a browser file-preview origin. During local development, allow
+# all origins so the frontend can reliably call the FastAPI backend.
+#
+# For production, replace allow_origins=["*"] with a specific deployed frontend URL.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=LOCALHOST_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=False,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -52,7 +49,19 @@ app.add_middleware(
 async def log_requests(request: Request, call_next: Any) -> Any:
     """Log each HTTP request with method, path, status, and latency."""
     start_time = time.perf_counter()
-    response = await call_next(request)
+
+    try:
+        response = await call_next(request)
+    except Exception:
+        duration_ms = (time.perf_counter() - start_time) * 1000
+        logger.exception(
+            "request_failed method=%s path=%s duration_ms=%.2f",
+            request.method,
+            request.url.path,
+            duration_ms,
+        )
+        raise
+
     duration_ms = (time.perf_counter() - start_time) * 1000
     logger.info(
         "request method=%s path=%s status=%s duration_ms=%.2f",
@@ -70,6 +79,7 @@ def root() -> dict[str, Any]:
     return {
         "name": "Vibe-to-Vinyl Curator",
         "description": "Agentic deterministic playlist curation backend",
+        "status": "running",
         "endpoints": {
             "health": "GET /health",
             "songs": "GET /songs",
@@ -147,6 +157,7 @@ def evaluate(request: EvaluationRequest) -> EvaluationResult:
             )
             response = curate_playlist(curate_request, song_catalog)
             report = response.validation_report
+
             results.append(
                 PromptEvaluationResult(
                     prompt=prompt,
@@ -156,21 +167,19 @@ def evaluate(request: EvaluationRequest) -> EvaluationResult:
                 )
             )
 
-        average_confidence = (
-            round(mean(result.overall_confidence for result in results), 3)
-            if results
-            else 0.0
+        average_confidence = round(
+            mean(result.overall_confidence for result in results), 3
         )
-        pass_rate = (
-            round(sum(result.passed for result in results) / len(results), 3)
-            if results
-            else 0.0
+        pass_rate = round(
+            sum(result.passed for result in results) / len(results), 3
         )
+
         return EvaluationResult(
             results=results,
             average_confidence=average_confidence,
             pass_rate=pass_rate,
         )
+
     except HTTPException:
         raise
     except SongDataError as exc:

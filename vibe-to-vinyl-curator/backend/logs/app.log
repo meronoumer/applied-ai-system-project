@@ -1,3 +1,19 @@
 2026-04-29 03:27:20,764 INFO backend.app.agent curation_complete confidence=0.85 songs=9
 2026-04-29 03:27:20,786 INFO backend.app.agent curation_complete confidence=0.853 songs=6
 2026-04-29 03:27:20,800 INFO backend.app.agent curation_complete confidence=0.902 songs=6
+2026-04-29 03:30:57,547 INFO app.main request method=GET path=/ status=200 duration_ms=11.45
+2026-04-29 03:30:57,881 INFO app.main request method=GET path=/favicon.ico status=404 duration_ms=0.74
+2026-04-29 03:31:28,636 INFO app.main request method=GET path=/health status=200 duration_ms=2.80
+2026-04-29 03:31:44,641 INFO app.main request method=GET path=/docs status=200 duration_ms=1.16
+2026-04-29 03:31:45,607 INFO app.main request method=GET path=/openapi.json status=200 duration_ms=90.38
+2026-04-29 03:32:12,101 INFO app.agent curation_complete confidence=0.85 songs=9
+2026-04-29 03:32:12,106 INFO app.main request method=POST path=/curate status=200 duration_ms=73.18
+2026-04-29 03:40:12,367 INFO app.main request method=GET path=/health status=200 duration_ms=10.38
+2026-04-29 03:40:29,712 INFO app.agent curation_complete confidence=0.85 songs=9
+2026-04-29 03:40:29,722 INFO app.main request method=POST path=/curate status=200 duration_ms=76.53
+2026-04-29 03:40:41,363 INFO app.agent curation_complete confidence=0.85 songs=9
+2026-04-29 03:40:41,366 INFO app.main request method=POST path=/curate status=200 duration_ms=11.01
+2026-04-29 03:44:54,452 INFO app.main request method=GET path=/ status=200 duration_ms=10.01
+2026-04-29 03:45:22,584 INFO backend.app.agent curation_complete confidence=0.85 songs=9
+2026-04-29 03:45:22,591 INFO backend.app.agent curation_complete confidence=0.853 songs=6
+2026-04-29 03:45:22,596 INFO backend.app.agent curation_complete confidence=0.902 songs=6
