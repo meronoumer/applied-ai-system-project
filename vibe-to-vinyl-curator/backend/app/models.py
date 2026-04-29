@@ -2,7 +2,7 @@
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 LyricsLevel = Literal["none", "low", "medium", "high"]
@@ -79,9 +79,26 @@ class SongRecommendation(BaseModel):
     """A selected song with its stage assignment and deterministic rationale."""
 
     song: Song
-    stage: str
+    stage_name: str = ""
     match_score: float = Field(ge=0, le=1)
-    explanation: str
+    reason: str = ""
+
+    # Compatibility fields used by the initial deterministic modules.
+    stage: str = ""
+    explanation: str = ""
+
+    @model_validator(mode="after")
+    def sync_compatibility_fields(self) -> "SongRecommendation":
+        """Keep new and legacy field names aligned."""
+        if not self.stage_name and self.stage:
+            self.stage_name = self.stage
+        if not self.stage and self.stage_name:
+            self.stage = self.stage_name
+        if not self.reason and self.explanation:
+            self.reason = self.explanation
+        if not self.explanation and self.reason:
+            self.explanation = self.reason
+        return self
 
 
 class ValidationIssue(BaseModel):
