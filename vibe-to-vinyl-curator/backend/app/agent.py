@@ -10,7 +10,7 @@ from .models import (
     SongRecommendation,
     ValidationIssue,
 )
-from .parser import parse_intent
+from .parser import parse_user_prompt
 from .planner import plan_arc
 from .retriever import retrieve_candidates
 from .selector import select_songs
@@ -23,7 +23,11 @@ logger = logging.getLogger(__name__)
 def curate_playlist(request: CurateRequest) -> CurateResponse:
     trace: list[AgentTraceStep] = []
     songs = load_songs()
-    intent = parse_intent(request.prompt)
+    intent = parse_user_prompt(
+        prompt=request.prompt,
+        target_duration_minutes=request.target_duration_minutes,
+        allow_explicit=request.allow_explicit,
+    )
     trace.append(AgentTraceStep(step="parser", summary="Parsed natural language prompt into structured intent.", details=intent.model_dump()))
 
     stages = plan_arc(intent, request.max_songs)
@@ -81,7 +85,11 @@ def curate_playlist(request: CurateRequest) -> CurateResponse:
 
 def evaluate_playlist(request: EvaluateRequest) -> EvaluateResponse:
     songs_by_id = {song.id: song for song in load_songs()}
-    intent = parse_intent(request.prompt)
+    intent = parse_user_prompt(
+        prompt=request.prompt,
+        target_duration_minutes=None,
+        allow_explicit=request.allow_explicit,
+    )
     stages = plan_arc(intent, max(3, min(len(request.song_ids), 24)))
     trace = [
         AgentTraceStep(step="parser", summary="Parsed evaluation prompt into structured intent.", details=intent.model_dump()),

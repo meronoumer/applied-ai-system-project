@@ -27,7 +27,7 @@ class ParsedIntent(BaseModel):
     end_mood: str = "hopeful"
     target_duration_minutes: int | None = None
     constraints: list[str] = Field(default_factory=list)
-    preferred_energy: float = Field(default=0.5, ge=0, le=1)
+    preferred_energy: str = "medium"
     avoid_lyrics: bool = False
     allow_explicit: bool = False
 
