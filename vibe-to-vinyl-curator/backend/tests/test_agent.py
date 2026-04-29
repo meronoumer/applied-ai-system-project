@@ -1,4 +1,5 @@
 from app.agent import curate_playlist, evaluate_playlist
+from app.data_loader import load_songs
 from app.models import CurateRequest, EvaluateRequest
 
 
@@ -7,7 +8,8 @@ def test_curate_returns_agentic_playlist():
         CurateRequest(
             prompt="I want a clean reflective playlist that starts calm and becomes hopeful.",
             max_songs=9,
-        )
+        ),
+        load_songs(),
     )
 
     assert response.parsed_intent.target_moods

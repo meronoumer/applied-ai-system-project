@@ -43,7 +43,7 @@ def songs() -> list[Song]:
 @app.post("/curate", response_model=CurateResponse)
 def curate(request: CurateRequest) -> CurateResponse:
     try:
-        return curate_playlist(request)
+        return curate_playlist(request, load_songs())
     except Exception as exc:
         logger.exception("curation_failed")
         raise HTTPException(status_code=500, detail="Unable to curate playlist.") from exc
