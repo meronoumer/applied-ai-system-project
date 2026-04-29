@@ -1,12 +1,66 @@
+"""Pydantic data contracts for the Vibe-to-Vinyl Curator backend."""
+
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
 
 LyricsLevel = Literal["none", "low", "medium", "high"]
+IssueSeverity = Literal["info", "warning", "error"]
+
+
+class CurateRequest(BaseModel):
+    """Request body for creating a new playlist arc from natural language."""
+
+    prompt: str = Field(min_length=3, max_length=1000)
+    target_duration_minutes: int | None = Field(default=None, ge=5, le=240)
+    allow_explicit: bool = False
+    max_songs: int = Field(default=10, ge=3, le=24)
+
+
+class ParsedIntent(BaseModel):
+    """Structured interpretation of the user's emotional playlist request."""
+
+    occasion: str = "general listening"
+    start_mood: str = "reflective"
+    middle_mood: str = "focused"
+    end_mood: str = "hopeful"
+    target_duration_minutes: int | None = None
+    constraints: list[str] = Field(default_factory=list)
+    preferred_energy: float = Field(default=0.5, ge=0, le=1)
+    avoid_lyrics: bool = False
+    allow_explicit: bool = False
+
+    # Compatibility fields used by the deterministic v0 agent modules.
+    original_prompt: str = ""
+    target_moods: list[str] = Field(default_factory=list)
+    avoided_moods: list[str] = Field(default_factory=list)
+    energy_start: float = Field(default=0.35, ge=0, le=1)
+    energy_end: float = Field(default=0.65, ge=0, le=1)
+    arc_type: str = "balanced"
+    desired_context: str = "general listening"
+
+
+class PlaylistStage(BaseModel):
+    """One phase in the emotional playlist journey."""
+
+    name: str
+    target_mood: str = "reflective"
+    target_energy: float = Field(default=0.5, ge=0, le=1)
+    description: str = ""
+    duration_share: float = Field(default=0.33, ge=0, le=1)
+
+    # Compatibility fields used by the deterministic v0 agent modules.
+    goal: str = ""
+    target_moods: list[str] = Field(default_factory=list)
+    energy_min: float = Field(default=0.0, ge=0, le=1)
+    energy_max: float = Field(default=1.0, ge=0, le=1)
+    song_count: int = Field(default=3, ge=1, le=24)
 
 
 class Song(BaseModel):
+    """A normalized song record loaded from the local CSV catalog."""
+
     id: int
     title: str
     artist: str
@@ -21,13 +75,60 @@ class Song(BaseModel):
     description: str
 
 
-class CurateRequest(BaseModel):
-    prompt: str = Field(min_length=3, max_length=1000)
-    max_songs: int = Field(default=12, ge=3, le=24)
-    allow_explicit: bool = False
+class SongRecommendation(BaseModel):
+    """A selected song with its stage assignment and deterministic rationale."""
+
+    song: Song
+    stage: str
+    match_score: float = Field(ge=0, le=1)
+    explanation: str
 
 
-class EvaluateRequest(BaseModel):
+class ValidationIssue(BaseModel):
+    """A single validation warning or failure emitted by the critic step."""
+
+    severity: IssueSeverity
+    message: str
+
+
+class ValidationReport(BaseModel):
+    """Guardrail and quality metrics for a generated or supplied playlist."""
+
+    mood_match: float = Field(default=0.0, ge=0, le=1)
+    transition_smoothness: float = Field(default=0.0, ge=0, le=1)
+    duration_accuracy: float = Field(default=0.0, ge=0, le=1)
+    constraint_satisfaction: float = Field(default=0.0, ge=0, le=1)
+    overall_confidence: float = Field(default=0.0, ge=0, le=1)
+    warnings: list[str] = Field(default_factory=list)
+    passed: bool = False
+
+    # Compatibility fields used by the deterministic v0 agent modules.
+    issues: list[ValidationIssue] = Field(default_factory=list)
+    metrics: dict[str, Any] = Field(default_factory=dict)
+
+
+class AgentTraceStep(BaseModel):
+    """One auditable step in the agentic curation workflow."""
+
+    step: str
+    summary: str
+    details: dict[str, Any] = Field(default_factory=dict)
+
+
+class CurateResponse(BaseModel):
+    """Response body returned by the curation endpoint."""
+
+    parsed_intent: ParsedIntent
+    playlist_arc: list[PlaylistStage]
+    selected_songs_by_stage: dict[str, list[SongRecommendation]]
+    validation_report: ValidationReport
+    confidence_score: float = Field(ge=0, le=1)
+    agent_trace: list[AgentTraceStep]
+
+
+class EvaluationRequest(BaseModel):
+    """Request body for validating a user-supplied playlist against a prompt."""
+
     prompt: str = Field(min_length=3, max_length=1000)
     song_ids: list[int] = Field(min_length=1, max_length=50)
     allow_explicit: bool = False
@@ -35,66 +136,23 @@ class EvaluateRequest(BaseModel):
     @field_validator("song_ids")
     @classmethod
     def unique_song_ids(cls, value: list[int]) -> list[int]:
+        """Reject duplicated song ids before evaluation."""
         if len(value) != len(set(value)):
             raise ValueError("song_ids must be unique")
         return value
 
 
-class Intent(BaseModel):
-    original_prompt: str
-    target_moods: list[str]
-    avoided_moods: list[str]
-    energy_start: float
-    energy_end: float
-    arc_type: str
-    desired_context: str
-    constraints: list[str]
+class EvaluationResult(BaseModel):
+    """Result returned by the playlist evaluation endpoint."""
 
-
-class ArcStage(BaseModel):
-    name: str
-    goal: str
-    target_moods: list[str]
-    energy_min: float
-    energy_max: float
-    song_count: int
-
-
-class SongRecommendation(BaseModel):
-    song: Song
-    stage: str
-    match_score: float
-    explanation: str
-
-
-class ValidationIssue(BaseModel):
-    severity: Literal["info", "warning", "error"]
-    message: str
-
-
-class ValidationReport(BaseModel):
-    passed: bool
-    issues: list[ValidationIssue]
-    metrics: dict[str, Any]
-
-
-class AgentTraceStep(BaseModel):
-    step: str
-    summary: str
-    details: dict[str, Any] = Field(default_factory=dict)
-
-
-class CurateResponse(BaseModel):
-    parsed_intent: Intent
-    playlist_arc: list[ArcStage]
-    selected_songs_by_stage: dict[str, list[SongRecommendation]]
+    parsed_intent: ParsedIntent
     validation_report: ValidationReport
-    confidence_score: float
+    confidence_score: float = Field(ge=0, le=1)
     agent_trace: list[AgentTraceStep]
 
 
-class EvaluateResponse(BaseModel):
-    parsed_intent: Intent
-    validation_report: ValidationReport
-    confidence_score: float
-    agent_trace: list[AgentTraceStep]
+# Backward-compatible aliases for the initial deterministic modules.
+Intent = ParsedIntent
+ArcStage = PlaylistStage
+EvaluateRequest = EvaluationRequest
+EvaluateResponse = EvaluationResult
